@@ -58,7 +58,10 @@ export class APIInvocationHelper {
             log.error(err.message, err.stack);
             callback({ msg: `Failed to invoke API '${err.message}'` });
         })
-        req.write(JSON.stringify(body));
+
+        if(method != "GET")
+            req.write(JSON.stringify(body));
+
         req.end();
     }
 
