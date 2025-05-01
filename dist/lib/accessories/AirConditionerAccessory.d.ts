@@ -16,8 +16,8 @@ export declare class AirConditionerAccessory extends BaseAccessory {
     constructor(platform: TuyaIRPlatform, accessory: PlatformAccessory);
     getTemperatureRange(): void;
     /**
-    * Load latest device status.
-    */
+     * Load latest device status.
+     */
     refreshStatus(): void;
     setOn(value: CharacteristicValue): void;
     getOn(): CharacteristicValue;

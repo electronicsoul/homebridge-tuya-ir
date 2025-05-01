@@ -15,7 +15,8 @@ class DoItYourselfAccessory extends BaseAccessory_1.BaseAccessory {
         this.platform = platform;
         this.accessory = accessory;
         // set accessory information
-        (_a = this.accessory.getService(this.platform.Service.AccessoryInformation)) === null || _a === void 0 ? void 0 : _a.setCharacteristic(this.platform.Characteristic.Manufacturer, accessory.context.device.product_name).setCharacteristic(this.platform.Characteristic.Model, 'Infrared Controlled Switch').setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.id);
+        (_a = this.accessory
+            .getService(this.platform.Service.AccessoryInformation)) === null || _a === void 0 ? void 0 : _a.setCharacteristic(this.platform.Characteristic.Manufacturer, accessory.context.device.product_name).setCharacteristic(this.platform.Characteristic.Model, 'Infrared Controlled Switch').setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.id);
         this.fetchLearningCodes(this.accessory.context.device.ir_id, this.accessory.context.device.id, (body) => {
             if (!body.success) {
                 this.log.error(`Failed to fetch learning codes due to error ${body.msg}`);
@@ -23,10 +24,11 @@ class DoItYourselfAccessory extends BaseAccessory_1.BaseAccessory {
             else {
                 this.accessory.context.device.codes = body.result;
                 // Cleaning accessories
-                const uuids = this.accessory.context.device.codes.map(code => this.platform.api.hap.uuid.generate(code.key_name));
+                const uuids = this.accessory.context.device.codes.map((code) => this.platform.api.hap.uuid.generate(code.key_name));
                 for (let service_index = this.accessory.services.length - 1; service_index >= 0; service_index--) {
                     const service = this.accessory.services[service_index];
-                    if (service.constructor.name === this.platform.api.hap.Service.Switch.name) {
+                    if (service.constructor.name ===
+                        this.platform.api.hap.Service.Switch.name) {
                         if (!uuids.includes(service.subtype)) {
                             this.accessory.removeService(service);
                         }
@@ -34,12 +36,14 @@ class DoItYourselfAccessory extends BaseAccessory_1.BaseAccessory {
                 }
                 for (const code of this.accessory.context.device.codes) {
                     this.log.debug(`Adding code ${code.key_name}`);
-                    const service = this.accessory.getService(this.platform.api.hap.uuid.generate(code.key_name)) || accessory.addService(this.platform.api.hap.Service.Switch, code.key_name, this.platform.api.hap.uuid.generate(code.key_name), code.key);
-                    service.getCharacteristic(this.platform.Characteristic.On)
+                    const service = this.accessory.getService(this.platform.api.hap.uuid.generate(code.key_name)) ||
+                        accessory.addService(this.platform.api.hap.Service.Switch, code.key_name, this.platform.api.hap.uuid.generate(code.key_name));
+                    service
+                        .getCharacteristic(this.platform.Characteristic.On)
                         .onGet(() => {
                         return false;
                     })
-                        .onSet(((value) => {
+                        .onSet((value) => {
                         if (value) {
                             this.sendLearningCode(this.accessory.context.device.ir_id, this.accessory.context.device.id, code.code, (body) => {
                                 if (!body.success) {
@@ -48,20 +52,22 @@ class DoItYourselfAccessory extends BaseAccessory_1.BaseAccessory {
                                 service.setCharacteristic(this.platform.Characteristic.On, false);
                             });
                         }
-                    }));
+                    });
                 }
             }
         });
     }
     sendLearningCode(deviceId, remoteId, code, cb) {
-        this.log.debug("Sending Learning Code");
-        APIInvocationHelper_1.APIInvocationHelper.invokeTuyaIrApi(this.log, this.configuration, this.configuration.apiHost + `/v2.0/infrareds/${deviceId}/remotes/${remoteId}/learning-codes`, "POST", { code }, (body) => {
+        this.log.debug('Sending Learning Code');
+        APIInvocationHelper_1.APIInvocationHelper.invokeTuyaIrApi(this.log, this.configuration, this.configuration.apiHost +
+            `/v2.0/infrareds/${deviceId}/remotes/${remoteId}/learning-codes`, 'POST', { code }, (body) => {
             cb(body);
         });
     }
     fetchLearningCodes(deviceId, remoteId, cb) {
-        this.log.debug("Getting Learning Codes");
-        APIInvocationHelper_1.APIInvocationHelper.invokeTuyaIrApi(this.log, this.configuration, this.configuration.apiHost + `/v2.0/infrareds/${deviceId}/remotes/${remoteId}/learning-codes`, "GET", {}, (body) => {
+        this.log.debug('Getting Learning Codes');
+        APIInvocationHelper_1.APIInvocationHelper.invokeTuyaIrApi(this.log, this.configuration, this.configuration.apiHost +
+            `/v2.0/infrareds/${deviceId}/remotes/${remoteId}/learning-codes`, 'GET', {}, (body) => {
             this.log.debug(`Received learning codes ${JSON.stringify(body)}`);
             cb(body);
         });
